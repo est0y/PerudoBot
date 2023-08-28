@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  mongo:
+    hostname: mongo
+    container_name: localmongo
+    image: mongo:5.0
+    expose:
+      - 27017
+    ports:
+      - 30001:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all" ]
