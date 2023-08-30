@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 import ru.est0y.perudo.commands.CommandManager;
 
 import java.time.Duration;
@@ -23,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class Bot extends ListenerAdapter {
     private final CommandManager commandManager;
+    private final Scheduler workPool;
 
 
 
@@ -34,7 +37,9 @@ public class Bot extends ListenerAdapter {
     public void onSlashCommandInteraction( @Nonnull SlashCommandInteractionEvent event){
         if (event.getUser().isBot())return;
         log.info(event.getName());
-      commandManager.getCommandByName(event.getName()).execute(event);
+        Mono.fromRunnable(()->commandManager.getCommandByName(event.getName()).execute(event))
+                .publishOn(workPool).subscribe();
+      //commandManager.getCommandByName(event.getName()).execute(event);
     }
 
 @SneakyThrows

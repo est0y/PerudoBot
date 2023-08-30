@@ -13,10 +13,10 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document
+//@Document
 @ToString
 public class Player {
-    @Id
+  //  @Id
     private Long  id;
     private String name;
     private int number;

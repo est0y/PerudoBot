@@ -10,6 +10,7 @@ public interface GameRepository extends ReactiveMongoRepository<Game, String> {
     Flux<Game> findByPlayersContaining(Player player);
     Mono<Game> findOneByPlayersContaining(Player player);
     Mono<Game> findOneByTurnHolder(Player player);
+    Mono<Game> findOneByTurnHolderId(long playerId);
     Flux<Game>findByPlayersId(long playerId);
     Mono<Game>findOneByPlayersId(long playerId);
 }

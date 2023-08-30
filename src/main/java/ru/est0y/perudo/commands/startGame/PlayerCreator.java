@@ -4,20 +4,18 @@ import net.dv8tion.jda.api.entities.Member;
 import org.springframework.stereotype.Service;
 import ru.est0y.perudo.domain.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 @Service
 public class PlayerCreator {
     public List<Player> create(List<Member> members) {
-        Collections.shuffle(new ArrayList<>(members));
+        var mutableMembers=new ArrayList<Member>(members);
+        Collections.shuffle(mutableMembers);
         AtomicInteger count = new AtomicInteger(0);
-        return members.stream().map(member -> new Player(
+        return mutableMembers.stream().map(member -> new Player(
                 member.getIdLong(),
-                member.getNickname(),
+                Optional.ofNullable(member.getNickname()).orElse(member.getEffectiveName()),
                 count.incrementAndGet(),
                 rollDice(5)
         )).toList();

@@ -39,6 +39,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Mono<Game> findByTurnHolder(long playerId) {
-        return playerRepository.findById(playerId).flatMap(gameRepository::findOneByTurnHolder);
+        return gameRepository.findOneByTurnHolderId(playerId);
+        //return playerRepository.findById(playerId).flatMap(gameRepository::findOneByTurnHolder);
     }
 }
