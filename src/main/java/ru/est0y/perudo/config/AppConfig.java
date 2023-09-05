@@ -6,6 +6,8 @@ import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.annotation.NonNull;
@@ -18,6 +20,10 @@ import java.util.concurrent.atomic.AtomicLong;
 @Configuration
 public class AppConfig {
     private static final int THREAD_POOL_SIZE = 2;
+    @Bean
+    public MongoTemplate mongoTemplate() {
+        return new MongoTemplate(new SimpleMongoClientDatabaseFactory("mongodb://localhost:30001/mongod"));
+    }
     @Bean
     public ReactiveWebServerFactory reactiveWebServerFactory() {
         var eventLoopGroup = new NioEventLoopGroup(THREAD_POOL_SIZE,

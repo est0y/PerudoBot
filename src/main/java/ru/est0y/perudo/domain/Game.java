@@ -16,11 +16,12 @@ public class Game {
     private String id;
     private  Long guildId;
     private   Player turnHolder;
+
     private List<Player>players;
 
     //вынести в класс Round
-    private  Bet lastBet;
-    private  int passCount;
+    private Bet lastBet;
+    private  int believersCount;
     private int roundNumber;
     private  boolean isSpecialRound;
 

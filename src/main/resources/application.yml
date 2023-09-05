@@ -1,6 +1,6 @@
 app:
-  player:
-    startingBalance: 1000
+  messages:
+    color: BLACK
   bot:
     token: "MTE0NDc2OTU1MzUwMzYxNzEzNA.G-1fqE.A3Tt6xLxGlPsFWVyNHY7rfosBkpMRCz806dqWg"
 spring:

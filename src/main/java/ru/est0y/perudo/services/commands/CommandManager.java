@@ -1,4 +1,4 @@
-package ru.est0y.perudo.commands;
+package ru.est0y.perudo.services.commands;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
