@@ -12,7 +12,7 @@ import ru.est0y.perudo.utils.PlayerUtils;
 
 import java.awt.*;
 
-@Service
+//@Service
 @RequiredArgsConstructor
 @Slf4j
 public class GameStateMessageCreator implements PrivateMessageCreator {

@@ -28,6 +28,8 @@ public class JdaConfig {
         var jda = JDABuilder.createDefault(token)
                 .addEventListeners(bot)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+       //.enableIntents(GatewayIntent.GUILD_MESSAGES)
+
                 .build();
         //jda.getGuilds().forEach(guild -> guild.updateCommands().addCommands())
         jda.upsertCommand("sg", "start game").setDescriptionLocalization(DiscordLocale.RUSSIAN, "начать игру")

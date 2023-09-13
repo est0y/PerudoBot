@@ -15,7 +15,7 @@ public class MembersFilterImpl implements MembersFilter {
         return members
                .count()
                .flatMap(size -> {
-                   if (size < 1) {
+                   if (size < 2) {
                        return Mono.error(new RuntimeException("No members found."));
                    } else {
                        return Mono.empty();

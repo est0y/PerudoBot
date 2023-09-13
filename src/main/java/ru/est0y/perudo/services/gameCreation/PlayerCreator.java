@@ -24,7 +24,7 @@ public class PlayerCreator {
     }
 
     private List<Integer> rollDice(int count) {
-        return IntStream.range(1, count + 1).map(i -> getRandomNumber(1, 6)).boxed().toList();
+        return IntStream.range(1, count + 1).map(i -> getRandomNumber(1, 7)).boxed().toList();
     }
 
     private int getRandomNumber(int min, int max) {

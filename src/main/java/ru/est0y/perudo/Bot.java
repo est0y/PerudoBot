@@ -14,6 +14,8 @@ import reactor.core.scheduler.Scheduler;
 import ru.est0y.perudo.services.buttonListeners.ButtonListenersManager;
 import ru.est0y.perudo.services.commands.CommandManager;
 
+import java.util.Arrays;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +28,9 @@ public class Bot extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot()) return;
+        var wordsList=Arrays.stream(event.getMessage().getContentRaw().split(" ")).toList();
+
+        //new SlashCommandInteractionEvent()
     }
 
     @Override
@@ -39,6 +44,7 @@ public class Bot extends ListenerAdapter {
     }
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
+        if (event.getUser().isBot()) return;
         buttonListenersManager.getListener(event.getComponentId()).click(event);
     }
 
@@ -49,6 +55,6 @@ public class Bot extends ListenerAdapter {
     }
 
     private void t(ScheduledEventCreateEvent event) {
-        event.getJDA().retrieveUserById(event.getScheduledEvent().getCreatorIdLong()).queue(user -> user.openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("start event").queue()));
+      //  event.getJDA().retrieveUserById(event.getScheduledEvent().getCreatorIdLong()).queue(user -> user.openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("start event").queue()));
     }
 }
