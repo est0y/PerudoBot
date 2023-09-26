@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import reactor.core.scheduler.Scheduler;
 import ru.est0y.perudo.services.buttonListeners.ButtonListenersManager;
 import ru.est0y.perudo.services.commands.CommandManager;
+import ru.est0y.perudo.services.commands.move.MoveCommand;
+import ru.est0y.perudo.utils.CustomEventProducer;
 
 import java.util.Arrays;
 
@@ -23,13 +25,22 @@ public class Bot extends ListenerAdapter {
     private final CommandManager commandManager;
     private final ButtonListenersManager buttonListenersManager;
     private final Scheduler workPool;
+    private final MoveCommand moveCommand;
+    private final CustomEventProducer customEventProducer;
 
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot()) return;
-        var wordsList=Arrays.stream(event.getMessage().getContentRaw().split(" ")).toList();
-
+        var wordsList = Arrays.stream(event.getMessage().getContentRaw().split(" ")).toList();
+        try {
+            Integer.valueOf(wordsList.get(0));
+            Integer.valueOf(wordsList.get(1));
+        } catch (Exception e) {
+            return;
+        }
+        var customEvent=customEventProducer.produce(event);
+        moveCommand.execute(customEvent,Integer.valueOf(wordsList.get(0)),Integer.valueOf(wordsList.get(1)));
         //new SlashCommandInteractionEvent()
     }
 
@@ -42,6 +53,7 @@ public class Bot extends ListenerAdapter {
                 .publishOn(workPool).subscribe();
         //commandManager.getCommandByName(event.getName()).execute(event);
     }
+
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
         if (event.getUser().isBot()) return;
@@ -55,6 +67,6 @@ public class Bot extends ListenerAdapter {
     }
 
     private void t(ScheduledEventCreateEvent event) {
-      //  event.getJDA().retrieveUserById(event.getScheduledEvent().getCreatorIdLong()).queue(user -> user.openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("start event").queue()));
+        //  event.getJDA().retrieveUserById(event.getScheduledEvent().getCreatorIdLong()).queue(user -> user.openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("start event").queue()));
     }
 }

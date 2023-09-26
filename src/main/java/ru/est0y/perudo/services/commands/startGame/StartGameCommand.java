@@ -14,9 +14,11 @@ import ru.est0y.perudo.repositories.GameRepository;
 import ru.est0y.perudo.repositories.PlayerRepository;
 import ru.est0y.perudo.repositories.UserRepository;
 import ru.est0y.perudo.services.UserServiceImpl;
-import ru.est0y.perudo.services.messaging.test.GameStateMessageCreator;
-import ru.est0y.perudo.services.messaging.test.MessageSender;
+import ru.est0y.perudo.services.messaging.GameStateMessageCreator;
+import ru.est0y.perudo.services.messaging.MessageSender;
 import ru.est0y.perudo.utils.SlashCommandInteractionEventUtils;
+
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service("sg")
@@ -42,7 +44,11 @@ public class StartGameCommand implements SlashCommand {
                                 .doOnError((e) -> event.reply("Кто-то из игроков уже в игре").queue())
                 ).then(gameCreator.createMono(members)).flatMap(gameRepository::save).flatMap(game -> Mono.fromRunnable(() -> {
                     var messages = gameStateMessageCreator.createPersonalMessage(game);
-                    event.reply("Игра началась").queue(v -> messageSender.send(event.getJDA(), messages));
+                    event.reply("Игра началась").queue(v -> {
+                        //todo мб исправить
+                        v.deleteOriginal().queueAfter(5, TimeUnit.SECONDS);
+                       messageSender.send(event.getJDA(), messages);
+                    });
                 }))
                 .then();
 

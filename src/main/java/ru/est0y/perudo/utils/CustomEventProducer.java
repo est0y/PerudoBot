@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 @Service
-public class EventReplierProducer {
+public class CustomEventProducer {
     public CustomEvent produce(SlashCommandInteractionEvent event){
         return new CustomEvent() {
             @Override

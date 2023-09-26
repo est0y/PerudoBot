@@ -3,9 +3,6 @@ package ru.est0y.perudo.services.commands.move;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -13,18 +10,13 @@ import ru.est0y.perudo.domain.rounds.RegularRound;
 import ru.est0y.perudo.domain.rounds.SpecialRound;
 import ru.est0y.perudo.services.commands.SlashCommand;
 import ru.est0y.perudo.services.commands.filters.BetFilter;
-import ru.est0y.perudo.domain.Bet;
 import ru.est0y.perudo.domain.Game;
-import ru.est0y.perudo.domain.Player;
 import ru.est0y.perudo.services.messaging.BetMessageCreator;
 import ru.est0y.perudo.services.GameService;
-import ru.est0y.perudo.services.messaging.test.MessageSender;
-import ru.est0y.perudo.utils.EventReplierProducer;
+import ru.est0y.perudo.services.messaging.MessageSender;
+import ru.est0y.perudo.utils.CustomEventProducer;
 import ru.est0y.perudo.utils.MessagingUtils;
 import ru.est0y.perudo.utils.PlayerUtils;
-
-import java.util.List;
-import java.util.Map;
 
 @Service("move")
 @RequiredArgsConstructor
@@ -37,7 +29,7 @@ public class MoveSlashCommand implements SlashCommand {
     private final MessageSender messageSender;
     private final PlayerUtils playerUtils;
     private final MessagingUtils messagingUtils;
-    private final EventReplierProducer eventReplierProducer;
+    private final CustomEventProducer customEventProducer;
     private final MoveCommand moveCommand;
     @Transactional
     @Override
@@ -45,7 +37,7 @@ public class MoveSlashCommand implements SlashCommand {
         //event.getOptions().forEach(optionMapping -> optionMapping.getName());
         int diceCount = event.getOption("count").getAsInt();
         int diceValue = event.getOption("value").getAsInt();
-        var customEvent=eventReplierProducer.produce(event);
+        var customEvent= customEventProducer.produce(event);
 
         moveCommand.execute(customEvent,diceCount,diceValue);
 

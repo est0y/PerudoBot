@@ -14,7 +14,7 @@ import ru.est0y.perudo.domain.rounds.SpecialRound;
 import ru.est0y.perudo.services.GameService;
 import ru.est0y.perudo.services.commands.filters.BetFilter;
 import ru.est0y.perudo.services.messaging.BetMessageCreator;
-import ru.est0y.perudo.services.messaging.test.MessageSender;
+import ru.est0y.perudo.services.messaging.MessageSender;
 import ru.est0y.perudo.utils.CustomEvent;
 import ru.est0y.perudo.utils.MessagingUtils;
 import ru.est0y.perudo.utils.PlayerUtils;
@@ -32,7 +32,15 @@ public class MoveCommand {
     private final MessageSender messageSender;
     private final PlayerUtils playerUtils;
     private final MessagingUtils messagingUtils;
-    void execute(CustomEvent event, int  diceCount, int diceValue){
+    public void execute(CustomEvent event, int  diceCount, int diceValue){
+        if (diceCount<=0){
+            event.reply("Число костей должно быть больше 0");
+            return;
+        }
+        if (!(diceValue>=1 && diceValue<=6)){
+            event.reply("Вторая цифра должна быть 1 до 6");
+            return;
+        }
         var newBet = new Bet(diceCount, diceValue);
         var game = gameService.findByTurnHolder(event.getUser().getIdLong()).blockOptional().orElseThrow(() -> {
             event.reply("Не ваш ход");

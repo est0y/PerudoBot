@@ -8,12 +8,13 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DiceImageCreator {
-    private File createImageFile(List<Integer> dice, String packName)throws InterruptedException{
+    private File createImageFile(List<Integer> dice, String packName) throws InterruptedException {
         try {
-            Supplier<Stream<BufferedImage>> images= ()-> dice.stream().map(die -> DiceImageCreator.class.getResourceAsStream("/" + packName + "/" + die + ".png")).map(inputStream -> {
+            Supplier<Stream<BufferedImage>> images = () -> dice.stream().map(die -> DiceImageCreator.class.getResourceAsStream("/" + packName + "/" + die + ".png")).map(inputStream -> {
                 try {
                     return ImageIO.read(inputStream);
                 } catch (IOException e) {
@@ -30,15 +31,16 @@ public class DiceImageCreator {
             g2d.dispose();
             g2d = mergedImage.createGraphics();
 
-            var imageList=images.get().toList();
-            for (int i = 0, width = 0;i<imageList.size();i++){
-                var image=imageList.get(i);
+            var imageList = images.get().toList();
+            for (int i = 0, width = 0; i < imageList.size(); i++) {
+                var image = imageList.get(i);
                 g2d.drawImage(image, width, 0, null);
-                width+=image.getWidth();
+                width += image.getWidth();
             }
             g2d.dispose();
             //todo имя должно состоять из номанала костей 13223.png
-            File outputFile = new File("merged_image.png");
+            String fileName = dice.stream().map(String::valueOf).collect(Collectors.joining());
+            File outputFile = new File(fileName + ".png");
 
             // Save the merged image with a transparent background
             ImageIO.write(mergedImage, "PNG", outputFile);

@@ -3,21 +3,17 @@ package ru.est0y.perudo.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDAInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.est0y.perudo.domain.Bet;
 import ru.est0y.perudo.domain.Game;
 import ru.est0y.perudo.domain.Player;
-import ru.est0y.perudo.services.messaging.test.GameEndMessageCreator;
-import ru.est0y.perudo.services.messaging.test.GameStateMessageCreator;
-import ru.est0y.perudo.services.messaging.test.MessageSender;
+import ru.est0y.perudo.services.messaging.GameEndMessageCreator;
+import ru.est0y.perudo.services.messaging.GameStateMessageCreator;
+import ru.est0y.perudo.services.messaging.MessageSender;
 import ru.est0y.perudo.utils.DiceUtils;
 import ru.est0y.perudo.utils.MessagingUtils;
 import ru.est0y.perudo.utils.PlayerUtils;
-
-import java.util.List;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor

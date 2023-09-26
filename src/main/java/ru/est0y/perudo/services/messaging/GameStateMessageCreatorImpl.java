@@ -1,4 +1,4 @@
-package ru.est0y.perudo.services.messaging.test;
+package ru.est0y.perudo.services.messaging;
 
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.springframework.stereotype.Service;
 import ru.est0y.perudo.domain.Game;
 import ru.est0y.perudo.domain.Player;
-import ru.est0y.perudo.services.messaging.EmojiDiceService;
 import ru.est0y.perudo.utils.DiceUtils;
 import ru.est0y.perudo.utils.PlayerUtils;
 
