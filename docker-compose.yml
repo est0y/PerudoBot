@@ -2,7 +2,7 @@ version: "3.9"
 services:
   mongo:
     hostname: mongo
-    container_name: localmongo
+    container_name: perudoMongoDb
     image: mongo:5.0
     expose:
       - 27017

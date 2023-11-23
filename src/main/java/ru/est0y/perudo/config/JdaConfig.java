@@ -51,7 +51,6 @@ public class JdaConfig {
 
                 //.addOption(OptionType.INTEGER,"value","dice value",true)
                 .queue();
-
         return jda;
     }
 
