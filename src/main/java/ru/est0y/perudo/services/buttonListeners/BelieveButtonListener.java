@@ -21,11 +21,11 @@ public class BelieveButtonListener implements ButtonListener {
     @Override
     public void click(ButtonInteractionEvent event) {
         event.getMessage().delete().queue();
-        var game = gameService.findByTurnHolder(event.getUser().getIdLong()).blockOptional().orElseThrow();
+        var game = gameService.findByTurnHolder(event.getUser().getIdLong()).orElseThrow();
         if (game.getBelieversCount() > 0) throw new RuntimeException();
         game.setBelieversCount(game.getBelieversCount() + 1);
         log.info(game.getTurnHolder().getName()+" believe");
-        gameService.save(game).subscribe();
+        gameService.save(game);
 
         /*var embed = new EmbedBuilder();
         embed.setColor(Color.BLACK);

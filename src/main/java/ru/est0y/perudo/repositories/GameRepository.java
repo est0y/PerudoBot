@@ -1,16 +1,18 @@
 package ru.est0y.perudo.repositories;
 
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import ru.est0y.perudo.domain.Game;
 import ru.est0y.perudo.domain.Player;
 
-public interface GameRepository extends ReactiveMongoRepository<Game, String> {
-    Flux<Game> findByPlayersContaining(Player player);
-    Mono<Game> findOneByPlayersContaining(Player player);
-    Mono<Game> findOneByTurnHolder(Player player);
-    Mono<Game> findOneByTurnHolderId(long playerId);
-    Flux<Game>findByPlayersId(long playerId);
-    Mono<Game>findOneByPlayersId(long playerId);
+import java.util.List;
+import java.util.Optional;
+
+public interface GameRepository extends MongoRepository<Game, String> {
+    List<Game> findByPlayersContaining(Player player);
+    Game findOneByPlayersContaining(Player player);
+    Game findOneByTurnHolder(Player player);
+    Optional<Game> findOneByTurnHolderId(long playerId);
+    List<Game>findByPlayersId(long playerId);
+    Optional<Game> findOneByPlayersId(long playerId);
 }

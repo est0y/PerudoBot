@@ -5,14 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
+import ru.est0y.perudo.domain.Game;
 import ru.est0y.perudo.domain.rounds.RegularRound;
 import ru.est0y.perudo.domain.rounds.SpecialRound;
+import ru.est0y.perudo.services.GameService;
 import ru.est0y.perudo.services.commands.SlashCommand;
 import ru.est0y.perudo.services.commands.filters.BetFilter;
-import ru.est0y.perudo.domain.Game;
 import ru.est0y.perudo.services.messaging.BetMessageCreator;
-import ru.est0y.perudo.services.GameService;
 import ru.est0y.perudo.services.messaging.MessageSender;
 import ru.est0y.perudo.utils.CustomEventProducer;
 import ru.est0y.perudo.utils.MessagingUtils;
@@ -33,7 +32,7 @@ public class MoveSlashCommand implements SlashCommand {
     private final MoveCommand moveCommand;
     @Transactional
     @Override
-    public Mono<Void> execute(SlashCommandInteractionEvent event) {
+    public void execute(SlashCommandInteractionEvent event) {
         //event.getOptions().forEach(optionMapping -> optionMapping.getName());
         int diceCount = event.getOption("count").getAsInt();
         int diceValue = event.getOption("value").getAsInt();
@@ -76,7 +75,6 @@ public class MoveSlashCommand implements SlashCommand {
         game.setBelieversCount(0);
         gameService.save(game).subscribe();
         event.reply(betMessage).queue();*/
-        return Mono.empty();
     }
 
     private void nextTurn(Game game) {

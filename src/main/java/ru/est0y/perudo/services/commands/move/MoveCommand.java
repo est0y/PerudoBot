@@ -42,7 +42,7 @@ public class MoveCommand {
             return;
         }
         var newBet = new Bet(diceCount, diceValue);
-        var game = gameService.findByTurnHolder(event.getUser().getIdLong()).blockOptional().orElseThrow(() -> {
+        var game = gameService.findByTurnHolder(event.getUser().getIdLong()).orElseThrow(() -> {
             event.reply("Не ваш ход");
             return new RuntimeException();
         });
@@ -74,7 +74,7 @@ public class MoveCommand {
 
         nextTurn(game);
         game.setBelieversCount(0);
-        gameService.save(game).subscribe();
+        gameService.save(game);
         event.reply(betMessage);
     }
     private void nextTurn(Game game) {

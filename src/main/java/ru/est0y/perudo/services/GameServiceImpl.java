@@ -2,11 +2,12 @@ package ru.est0y.perudo.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import ru.est0y.perudo.domain.Game;
 import ru.est0y.perudo.repositories.GameRepository;
 import ru.est0y.perudo.repositories.PlayerRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,30 +16,30 @@ public class GameServiceImpl implements GameService {
     private final PlayerRepository playerRepository;
 
     @Override
-    public Mono<Game> save(Game game) {
+    public Game save(Game game) {
         return gameRepository.save(game);
     }
 
     @Override
-    public Mono<Void> delete(Game game) {
-        return gameRepository.delete(game);
+    public void delete(Game game) {
+        gameRepository.delete(game);
     }
 
     @Override
-    public Flux<Game> getGamesByPlayer(long playerId) {
+    public List<Game> getGamesByPlayer(long playerId) {
         return gameRepository.findByPlayersId(playerId);
         /*return playerRepository.findById(playerId)
                 .flatMapMany(gameRepository::findByPlayersContaining);*/
     }
 
     @Override
-    public Mono<Game> getGameByPlayer(long playerId) {
+    public Optional<Game> getGameByPlayer(long playerId) {
         return gameRepository.findOneByPlayersId(playerId);
-       // return playerRepository.findById(playerId).flatMap(gameRepository::findOneByPlayersContaining);
+        // return playerRepository.findById(playerId).flatMap(gameRepository::findOneByPlayersContaining);
     }
 
     @Override
-    public Mono<Game> findByTurnHolder(long playerId) {
+    public Optional<Game> findByTurnHolder(long playerId) {
         return gameRepository.findOneByTurnHolderId(playerId);
         //return playerRepository.findById(playerId).flatMap(gameRepository::findOneByTurnHolder);
     }

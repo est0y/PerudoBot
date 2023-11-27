@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
-import reactor.core.scheduler.Scheduler;
 import ru.est0y.perudo.services.buttonListeners.ButtonListenersManager;
 import ru.est0y.perudo.services.commands.CommandManager;
 import ru.est0y.perudo.services.commands.move.MoveCommand;
@@ -24,7 +23,6 @@ import java.util.Arrays;
 public class Bot extends ListenerAdapter {
     private final CommandManager commandManager;
     private final ButtonListenersManager buttonListenersManager;
-    private final Scheduler workPool;
     private final MoveCommand moveCommand;
     private final CustomEventProducer customEventProducer;
 
@@ -49,8 +47,7 @@ public class Bot extends ListenerAdapter {
         if (event.getUser().isBot()) return;
         log.info(event.getName());
         commandManager.getCommandByName(event.getName())
-                .execute(event)
-                .publishOn(workPool).subscribe();
+                .execute(event);
         //commandManager.getCommandByName(event.getName()).execute(event);
     }
 

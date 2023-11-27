@@ -4,12 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
 import ru.est0y.perudo.domain.Player;
 
 import java.time.Duration;
@@ -19,6 +17,7 @@ import java.util.Map;
 @Service
 @Slf4j
 public class MessageSenderImpl implements MessageSender {
+    @Retryable
     @Override
     public void send(JDA jda, Map<Player, MessageCreateData> messages) {
         //todo починить
@@ -31,17 +30,17 @@ public class MessageSenderImpl implements MessageSender {
 
 
 
-        messages.keySet().forEach(player -> sendMessageWithRetry(jda,player,messages.get(player),List.of()).subscribe());
+        messages.keySet().forEach(player -> sendMessageWithRetry(jda,player,messages.get(player),List.of()));
   /*      messages.keySet().stream().map(player -> jda.retrieveUserById(player.getId())
                         .flatMap(user -> user.openPrivateChannel().
                                 flatMap(c -> c.sendMessage(messages.get(player)))))
                 .forEach(RestAction::queue);*/
         log.info("send to many "+messages);
     }
-
+    @Retryable
     @Override
     public void send(JDA jda, Player player, MessageCreateData message) {
-        sendMessageWithRetry(jda,player,message,List.of()).subscribe();
+        sendMessageWithRetry(jda,player,message,List.of());
        /* jda.getUserById(player.getId()).openPrivateChannel().flatMap(c->c.sendMessage(message))
                 .onErrorFlatMap(error->{
                     log.error("Sending to one error:",error);
@@ -57,7 +56,7 @@ public class MessageSenderImpl implements MessageSender {
 
     @Override
     public void send(JDA jda, Player player, MessageCreateData message, List<ItemComponent> buttons) {
-        sendMessageWithRetry(jda,player,message,buttons).subscribe();
+        sendMessageWithRetry(jda,player,message,buttons);
         //new RestRateLimiter()
        /*.onErrorFlatMap(error->{
             log.error("Sending with buttons error:",error);
@@ -70,32 +69,24 @@ public class MessageSenderImpl implements MessageSender {
     }
 
 
-public static Mono<Void> sendMessageWithRetry(JDA jda, Player player,MessageCreateData message, List<ItemComponent> buttons) {
+public static void sendMessageWithRetry(JDA jda, Player player,MessageCreateData message, List<ItemComponent> buttons) {
     log.info("method");
-    return Mono.defer(() -> {
+
         try {
-            User user = jda.retrieveUserById(player.getId()).complete();
-         //   if (user != null) {
-                PrivateChannel channel = user.openPrivateChannel().complete();
-                if (buttons.size()==0){
-                    channel.sendMessage(message).complete();
-                }else {
-                    channel.sendMessage(message).addActionRow(buttons).complete();
-                }
-          //  }
-            return Mono.<Void>empty();
+            jda.retrieveUserById(player.getId()).queue(user -> {
+                 user.openPrivateChannel().queue(channel -> {
+                     if (buttons.size()==0){
+                         channel.sendMessage(message).queue();
+                     }else {
+                         channel.sendMessage(message).addActionRow(buttons).queue();
+                     }
+                 });
+            });
         } catch (Exception e) {
             log.info("send message with button error");
             log.error("send message error",e);
-            return Mono.error(e);
+            throw e;
         }
-    }).retryWhen(Retry
-            .backoff(3, Duration.ofSeconds(1))
-            .jitter(0.5)
-            .doAfterRetry(retrySignal -> {
-                log.info("Retrying...");
-            })
-    );
 }
 }
 

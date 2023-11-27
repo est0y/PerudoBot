@@ -8,12 +8,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import ru.est0y.perudo.domain.User;
 import ru.est0y.perudo.repositories.UserRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -32,31 +31,31 @@ public class UserServiceImpl {
     }
 
     @Transactional
-    public Flux<User> updateOrSave(List<Long> ids) {
+    public List<User> updateOrSave(List<Long> ids) {
         log.info("start updateOrSave");
-        Mono<Map<Long, User>> userMapMono = userRepository.findAllById(ids)
-                .collectMap(User::getId, user -> user);
+        Map<Long, User> userMap = userRepository.findAllById(ids).stream()
+                .collect(Collectors.toMap(User::getId, (u) -> u));
 
-        return userMapMono.flatMapMany(userMap -> {
-            log.info(userMap.toString());
-            var newUsers = new ArrayList<User>();
-            for (var id : ids) {
-                if (!userMap.containsKey(id)) {
-                    newUsers.add(new User(id, true));
-                }
+        //return userMapMono.flatMapMany(userMap -> {
+        log.info(userMap.toString());
+        var newUsers = new ArrayList<User>();
+        for (var id : ids) {
+            if (!userMap.containsKey(id)) {
+                newUsers.add(new User(id, true));
             }
+        }
 
-            if (userMap.values().stream().noneMatch(User::isPlaying)) {
-                userMap.values().forEach(user -> user.setPlaying(true));
-            } else {
-                return Flux.error(new RuntimeException("Cannot process user IDs. Some users are already playing."));
-            }
-            log.info("end updateOrSave");
-            return Flux.concat(
-                    userRepository.insert(newUsers),                // Insert new users
-                    userRepository.saveAll(userMap.values())       // Save existing users
-            );
-        });
+        if (userMap.values().stream().noneMatch(User::isPlaying)) {
+            userMap.values().forEach(user -> user.setPlaying(true));
+        } else {
+            throw new RuntimeException("Cannot process user IDs. Some users are already playing.");
+        }
+        log.info("end updateOrSave");
+
+                userRepository.insert(newUsers);             // Insert new users
+              return userRepository.saveAll(userMap.values());     // Save existing users
+
+        // });
     }
 
 

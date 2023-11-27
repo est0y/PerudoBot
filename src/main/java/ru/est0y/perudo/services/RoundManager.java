@@ -74,7 +74,7 @@ public class RoundManager {
             game.setTurnHolder(playerUtils.getNextPlayer(game));
         }
         game.setRoundNumber(game.getRoundNumber() + 1);
-        gameService.save(game).subscribe();
+        gameService.save(game);
         messageSender.send(jda, gameStateMessageCreator.createPersonalMessage(game));
         //game.getPlayers().forEach(p -> messageSender.sendToOne(jda, p.getId(), gameStateMessageCreator.createMessage(p, game)));
 
@@ -84,7 +84,7 @@ public class RoundManager {
         var message = gameEndMessageCreator.createMessage(player);
         messageSender.send(jda, messagingUtils.getMessageMap(game.getPlayers(), message));
         userService.updateIsPlayingByIds(game.getPlayers().stream().map(Player::getId).toList(), false);
-        gameService.delete(game).subscribe();
+        gameService.delete(game);
     }
 
 }

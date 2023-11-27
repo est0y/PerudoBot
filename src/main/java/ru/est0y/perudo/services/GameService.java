@@ -1,15 +1,15 @@
 package ru.est0y.perudo.services;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import ru.est0y.perudo.domain.Game;
-import ru.est0y.perudo.domain.Player;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface GameService {
-    Mono<Game>save(Game game);
-    Mono<Void>delete(Game game);
+    Game save(Game game);
+    void delete(Game game);
 
-    Flux<Game> getGamesByPlayer(long playerId);
-    Mono<Game> getGameByPlayer(long playerId);
-    Mono<Game> findByTurnHolder(long playerId);
+    List<Game> getGamesByPlayer(long playerId);
+    Optional<Game> getGameByPlayer(long playerId);
+    Optional<Game> findByTurnHolder(long playerId);
 }
