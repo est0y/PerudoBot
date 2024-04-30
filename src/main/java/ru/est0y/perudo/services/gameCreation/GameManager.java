@@ -7,11 +7,14 @@ import ru.est0y.perudo.domain.Game;
 
 import java.util.List;
 import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class GameManager {
-    private final Map<String,GameCreator> gameCreatorMap;
-    public Game getGame(String creatorName, List<Member>members){
+
+    private final Map<String, GameCreator> gameCreatorMap;
+
+    public Game getGame(String creatorName, List<Member> members) {
         return gameCreatorMap.get(creatorName).create(members);
     }
 }

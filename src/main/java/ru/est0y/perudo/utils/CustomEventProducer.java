@@ -8,13 +8,14 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+
 @Service
 public class CustomEventProducer {
-    public CustomEvent produce(SlashCommandInteractionEvent event){
+
+    public CustomEvent produce(SlashCommandInteractionEvent event) {
         return new CustomEvent() {
             @Override
             public void reply(String string) {
-
                 event.reply(string).queue();
             }
 
@@ -39,7 +40,8 @@ public class CustomEventProducer {
             }
         };
     }
-    public CustomEvent produce(MessageReceivedEvent event){
+
+    public CustomEvent produce(MessageReceivedEvent event) {
         return new CustomEvent() {
             @Override
             public void reply(String string) {

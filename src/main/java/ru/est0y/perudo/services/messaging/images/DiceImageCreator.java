@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DiceImageCreator {
+
     private File createImageFile(List<Integer> dice, String packName) throws InterruptedException {
         try {
             Supplier<Stream<BufferedImage>> images = () -> dice.stream().map(die -> DiceImageCreator.class.getResourceAsStream("/" + packName + "/" + die + ".png")).map(inputStream -> {

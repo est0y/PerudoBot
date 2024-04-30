@@ -11,24 +11,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ClassicGameCreator implements GameCreator{
+public class ClassicGameCreator implements GameCreator {
 
     private final PlayerCreator playerCreator;
+
     private final MemberUtils memberUtils;
 
-/*    public Game createMono(List<Member> members) {
-        var players = playerCreator.create(members);
-        return new Game(
-                null,
-                memberUtils.getGuidId(members.get(0)),
-                players.get(0),
-                players,
-                new Bet(0, 0),
-                1,
-                1,
-                false
-        );
-    }*/
 
     @Override
     public Game create(List<Member> members) {

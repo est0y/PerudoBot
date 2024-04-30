@@ -13,28 +13,26 @@ import ru.est0y.perudo.utils.MessagingUtils;
 @RequiredArgsConstructor
 @Slf4j
 public class BelieveButtonListener implements ButtonListener {
+
     private final GameService gameService;
+
     private final IsBelieveMessageCreator isBelieveMessageCreator;
+
     private final MessageSender messageSender;
+
     private final MessagingUtils messagingUtils;
 
     @Override
     public void click(ButtonInteractionEvent event) {
         event.getMessage().delete().queue();
         var game = gameService.findByTurnHolder(event.getUser().getIdLong()).orElseThrow();
-        if (game.getBelieversCount() > 0) throw new RuntimeException();
+        if (game.getBelieversCount() > 0) {
+            throw new RuntimeException();
+        }
         game.setBelieversCount(game.getBelieversCount() + 1);
-        log.info(game.getTurnHolder().getName()+" believe");
+        log.info("{} believe", game.getTurnHolder().getName());
         gameService.save(game);
-
-        /*var embed = new EmbedBuilder();
-        embed.setColor(Color.BLACK);
-        embed.setTitle("**" + game.getTurnHolder().getName() + "**: верит");
-        var message = new MessageCreateBuilder().setEmbeds(embed.build()).build();*/
-        var message=isBelieveMessageCreator.createMessage(game.getTurnHolder(),true);
-        messageSender.send(event.getJDA(),messagingUtils.getMessageMap(game.getPlayers(),message));
-    /*    messageSender2.sendToAll(event.getJDA(), game.getPlayers().stream()
-                        .map(Player::getId).toList(),
-                message);*/
+        var message = isBelieveMessageCreator.createMessage(game.getTurnHolder(), true);
+        messageSender.send(event.getJDA(), messagingUtils.getMessageMap(game.getPlayers(), message));
     }
 }

@@ -10,7 +10,7 @@ import ru.est0y.perudo.domain.Player;
 import ru.est0y.perudo.utils.DiceUtils;
 import ru.est0y.perudo.utils.PlayerUtils;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,8 +18,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class GameStateMessageCreatorImpl implements GameStateMessageCreator {
+
     private final EmojiDiceService emojiDiceService;
+
     private final PlayerUtils playerUtils;
+
     private final DiceUtils diceUtils;
 
     @Override
@@ -29,18 +32,18 @@ public class GameStateMessageCreatorImpl implements GameStateMessageCreator {
         embed.setColor(Color.BLACK);
         embed.setTitle("Конец раунда");
         game.getPlayers().forEach(player -> {
-            if (!player.isPlaying())return;
+            if (!player.isPlaying()) {
+                return;
+            }
             String playerString = "";
             playerString = playerString.concat("**" + player.getName() + "**" + ": ");
             playerString = playerString.concat(emojiDiceService.getAsString(player.getDice()));
-            if (player.equals(game.getTurnHolder())) {
-              //  playerString = playerString.concat(":point_left:  ");
-            }
             embed.addField("", playerString, false);
         });
         var lastBet = game.getLastBet();
-        var diceCountInGame = game.isSpecialRound()?diceUtils.getDiceValueCountWithoutOnes(game.getLastBet().getDiceValue(),game):diceUtils.getDiceValueCountWithOnes(game.getLastBet().getDiceValue(),game);
-               // game.getPlayers().stream().flatMap(p -> p.getDice().stream()).filter(d -> (lastBet.getDiceValue() == d) || d == 1).count();
+        var diceCountInGame = game.isSpecialRound() ?
+                diceUtils.getDiceValueCountWithoutOnes(game.getLastBet().getDiceValue(), game) :
+                diceUtils.getDiceValueCountWithOnes(game.getLastBet().getDiceValue(), game);
         String loserName;
         if (lastBet.getDiceCount() <= diceCountInGame) {
             loserName = game.getTurnHolder().getName();
@@ -61,13 +64,15 @@ public class GameStateMessageCreatorImpl implements GameStateMessageCreator {
             var embed = new EmbedBuilder();
             embed.setColor(Color.BLACK);
             embed.setTitle("Раунд " + game.getRoundNumber());
-            if (game.isSpecialRound()){
+            if (game.isSpecialRound()) {
                 embed.setTitle("Раунд Мапуто");
-            }else {
+            } else {
                 embed.setTitle("Раунд " + game.getRoundNumber());
             }
             game.getPlayers().forEach(p -> {
-                if (!p.isPlaying())return;
+                if (!p.isPlaying()) {
+                    return;
+                }
                 String playerString = "";
                 playerString = playerString.concat("**" + p.getName() + "**" + ": ");
                 if (p.equals(player)) {

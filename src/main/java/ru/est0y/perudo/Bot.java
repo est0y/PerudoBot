@@ -22,14 +22,19 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class Bot extends ListenerAdapter {
     private final CommandManager commandManager;
+
     private final ButtonListenersManager buttonListenersManager;
+
     private final MoveCommand moveCommand;
+
     private final CustomEventProducer customEventProducer;
 
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.getAuthor().isBot()) return;
+        if (event.getAuthor().isBot()) {
+            return;
+        }
         var wordsList = Arrays.stream(event.getMessage().getContentRaw().split(" ")).toList();
         try {
             Integer.valueOf(wordsList.get(0));
@@ -37,23 +42,25 @@ public class Bot extends ListenerAdapter {
         } catch (Exception e) {
             return;
         }
-        var customEvent=customEventProducer.produce(event);
-        moveCommand.execute(customEvent,Integer.valueOf(wordsList.get(0)),Integer.valueOf(wordsList.get(1)));
-        //new SlashCommandInteractionEvent()
+        var customEvent = customEventProducer.produce(event);
+        moveCommand.execute(customEvent, Integer.parseInt(wordsList.get(0)), Integer.parseInt(wordsList.get(1)));
     }
 
     @Override
     public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {
-        if (event.getUser().isBot()) return;
+        if (event.getUser().isBot()) {
+            return;
+        }
         log.info(event.getName());
         commandManager.getCommandByName(event.getName())
                 .execute(event);
-        //commandManager.getCommandByName(event.getName()).execute(event);
     }
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
-        if (event.getUser().isBot()) return;
+        if (event.getUser().isBot()) {
+            return;
+        }
         buttonListenersManager.getListener(event.getComponentId()).click(event);
     }
 
@@ -61,9 +68,5 @@ public class Bot extends ListenerAdapter {
     @Override
     public void onScheduledEventCreate(@Nonnull ScheduledEventCreateEvent event) {
 
-    }
-
-    private void t(ScheduledEventCreateEvent event) {
-        //  event.getJDA().retrieveUserById(event.getScheduledEvent().getCreatorIdLong()).queue(user -> user.openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("start event").queue()));
     }
 }

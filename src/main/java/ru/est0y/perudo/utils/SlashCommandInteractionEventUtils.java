@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 @Service
 public class SlashCommandInteractionEventUtils {
     public Member getMember(SlashCommandInteractionEvent event) {
@@ -22,7 +23,8 @@ public class SlashCommandInteractionEventUtils {
                 ).getChannel()
         ).orElseThrow();
     }
-    public Guild getGuild(SlashCommandInteractionEvent event){
+
+    public Guild getGuild(SlashCommandInteractionEvent event) {
         return Optional.ofNullable(event.getGuild()).orElseThrow();
     }
 

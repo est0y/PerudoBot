@@ -15,35 +15,35 @@ import ru.est0y.perudo.utils.MessagingUtils;
 @RequiredArgsConstructor
 @Slf4j
 public class NoBelieveButtonListener implements ButtonListener {
+
     private final GameService gameService;
+
     private final MessageSender messageSender;
+
     private final GameStateMessageCreator gameStateMessageCreator;
+
     private final RoundManager roundManager;
+
     private final IsBelieveMessageCreator isBelieveMessageCreator;
+
     private final MessagingUtils messagingUtils;
 
+    @SuppressWarnings("checkstyle:WhitespaceAround")
     @Override
     public void click(ButtonInteractionEvent event) {
         event.getMessage().delete().queue();
 
         var game = gameService.findByTurnHolder(event.getUser().getIdLong()).orElseThrow();
-        if (game.getBelieversCount() > 0) throw new RuntimeException();
+        if (game.getBelieversCount() > 0) {
+            throw new RuntimeException();
+        }
         game.setBelieversCount(game.getBelieversCount() + 1);
-        log.info(game.getTurnHolder().getName()+" believe");
+        log.info("{} believe", game.getTurnHolder().getName());
         gameService.save(game);
-
-        /*var embed = new EmbedBuilder();
-        embed.setColor(Color.BLACK);
-        embed.setTitle("**" + game.getTurnHolder().getName() + "**: не верит");
-        var message = new MessageCreateBuilder().setEmbeds(embed.build()).build();*/
-        var message=isBelieveMessageCreator.createMessage(game.getTurnHolder(),false);
-        messageSender.send(event.getJDA(),messagingUtils.getMessageMap(game.getPlayers(),message));
-        var endRoundMessages=gameStateMessageCreator.createMessage(game);
+        var message = isBelieveMessageCreator.createMessage(game.getTurnHolder(), false);
+        messageSender.send(event.getJDA(), messagingUtils.getMessageMap(game.getPlayers(), message));
+        var endRoundMessages = gameStateMessageCreator.createMessage(game);
         messageSender.send(event.getJDA(), endRoundMessages);
-      /*  messageSender2.sendToAll(event.getJDA(), game.getPlayers().stream()
-                        .map(Player::getId).toList(), message);
-        messageSender2.sendToAll(event.getJDA(), game.getPlayers().stream()
-                .map(Player::getId).toList(), gameStateMessageCreator.createMessage(game));*/
         roundManager.finishRound(event.getJDA(), game);
     }
 }

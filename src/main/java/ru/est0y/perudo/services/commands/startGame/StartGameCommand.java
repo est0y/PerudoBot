@@ -7,8 +7,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.est0y.perudo.repositories.GameRepository;
-import ru.est0y.perudo.repositories.PlayerRepository;
-import ru.est0y.perudo.repositories.UserRepository;
 import ru.est0y.perudo.services.UserServiceImpl;
 import ru.est0y.perudo.services.commands.SlashCommand;
 import ru.est0y.perudo.services.gameCreation.ClassicGameCreator;
@@ -23,15 +21,19 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class StartGameCommand implements SlashCommand {
     private final GameRepository gameRepository;
-    private final PlayerRepository playerRepository;
-    private final UserRepository userRepository;
+
     private final SlashCommandInteractionEventUtils utils;
+
     private final MembersFilter membersFilter;
+
     private final ClassicGameCreator gameCreator;
-    //private final GameMessagingService gameMessagingService;
+
     private final GameStateMessageCreator gameStateMessageCreator;
+
     private final MessageSender messageSender;
+
     private final UserServiceImpl userService;
+
 
     @Transactional
     @Override
@@ -43,6 +45,7 @@ public class StartGameCommand implements SlashCommand {
             userService.updateOrSave(members.stream().map(ISnowflake::getIdLong).toList());
         } catch (Exception e) {
             event.reply("Кто-то из игроков уже в игре").queue();
+            return;
         }
         var game = gameCreator.create(members);
         game = gameRepository.save(game);
@@ -52,19 +55,6 @@ public class StartGameCommand implements SlashCommand {
             v.deleteOriginal().queueAfter(5, TimeUnit.SECONDS);
             messageSender.send(event.getJDA(), messages);
         });
-    /*    return membersFilter.doFilter(Flux.fromIterable(members)).thenMany(
-                        userService.updateOrSave(members.stream().map(ISnowflake::getIdLong).toList())
-                                .doOnError((e) -> event.reply("Кто-то из игроков уже в игре").queue())
-                ).then(gameCreator.createMono(members)).flatMap(gameRepository::save).flatMap(game -> Mono.fromRunnable(() -> {
-                    var messages = gameStateMessageCreator.createPersonalMessage(game);
-                    event.reply("Игра началась").queue(v -> {
-                        //todo мб исправить
-                        v.deleteOriginal().queueAfter(5, TimeUnit.SECONDS);
-                        messageSender.send(event.getJDA(), messages);
-                    });
-                }))
-                .then();
-*/
     }
 
 

@@ -14,7 +14,9 @@ import ru.est0y.perudo.services.UserServiceImpl;
 @Slf4j
 public class EndGame implements SlashCommand {
     private final GameService gameService;
+
     private final UserServiceImpl userService;
+
     @Transactional
     @Override
     public void execute(SlashCommandInteractionEvent event) {

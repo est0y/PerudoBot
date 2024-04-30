@@ -6,13 +6,13 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.springframework.stereotype.Service;
 import ru.est0y.perudo.domain.Bet;
-import ru.est0y.perudo.domain.Game;
 import ru.est0y.perudo.domain.Player;
 
-import java.awt.*;
+import java.awt.Color;
+
 @Service
 @RequiredArgsConstructor
-public class BetMessageCreator  {
+public class BetMessageCreator {
     private final EmojiDiceService emojiDiceService;
 
 
@@ -20,7 +20,9 @@ public class BetMessageCreator  {
 
         var embed = new EmbedBuilder();
         embed.setColor(Color.BLACK);
-        embed.setTitle(player.getName() + ": **"+bet.getDiceCount()+"**"+ emojiDiceService.getAsString(bet.getDiceValue()));
+        var title = String.format("%s: **%d**%s",
+                player.getName(), bet.getDiceCount(), emojiDiceService.getAsString(bet.getDiceValue()));
+        embed.setTitle(title);
         return new MessageCreateBuilder().setEmbeds(embed.build()).build();
     }
 }

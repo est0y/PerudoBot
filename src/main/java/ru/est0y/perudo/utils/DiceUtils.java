@@ -5,6 +5,7 @@ import ru.est0y.perudo.domain.Game;
 
 import java.util.List;
 import java.util.stream.IntStream;
+
 @Service
 public class DiceUtils {
     public List<Integer> rollDice(int count) {
@@ -17,6 +18,7 @@ public class DiceUtils {
                 .flatMap(p -> p.getDice().stream())
                 .filter(d -> (d == diceValue) || (d == 1)).count();
     }
+
     public long getDiceValueCountWithoutOnes(int diceValue, Game game) {
 
         return game.getPlayers().stream()

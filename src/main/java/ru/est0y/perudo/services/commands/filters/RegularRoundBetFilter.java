@@ -44,12 +44,9 @@ public class RegularRoundBetFilter implements BetFilter<RegularRound> {
 
     private void newHaveOnes(CustomEvent event, Bet oldBet, Bet newBet) {
         var needCounts = (int) Math.ceil((double) oldBet.getDiceCount() / 2);
-        ;
         if (needCounts > newBet.getDiceCount()) {
             event.reply("Ставка в единицах может быть меньше только в 2 раза,округление в большую сторну");
-                    //.queue();
             throw new RuntimeException();
-
         }
     }
 }

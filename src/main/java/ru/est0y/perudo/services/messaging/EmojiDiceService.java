@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Service
 public class EmojiDiceService {
-    private final static Map<Integer, String> codes = Map.of(
+    private static final Map<Integer, String> CODES = Map.of(
             1, "<:dice1:1146951057608552478>",
             2, "<:dice2:1146953458247807077>",
             3, "<:dice3:1146953487591153685>",
@@ -19,11 +19,11 @@ public class EmojiDiceService {
     );
 
     public EmojiUnion getEmoji(int diceNum) {
-        return Emoji.fromFormatted(codes.get(diceNum));
+        return Emoji.fromFormatted(CODES.get(diceNum));
     }
 
     public String getAsString(int diceNum) {
-        return codes.get(diceNum);
+        return CODES.get(diceNum);
     }
 
     public String getAsString(List<Integer> dice) {

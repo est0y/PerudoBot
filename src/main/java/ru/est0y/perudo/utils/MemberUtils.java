@@ -5,10 +5,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MemberUtils {
-    public  long getUserId(Member member){
+    public long getUserId(Member member) {
         return member.getIdLong();
     }
-   public long getGuidId(Member member){
+
+    public long getGuidId(Member member) {
         return member.getGuild().getIdLong();
     }
 }

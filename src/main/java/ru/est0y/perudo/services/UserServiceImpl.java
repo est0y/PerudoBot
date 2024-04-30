@@ -11,14 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.est0y.perudo.domain.User;
 import ru.est0y.perudo.repositories.UserRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl {
+
     private final UserRepository userRepository;
+
     private final MongoTemplate mongoTemplate;
 
     @Transactional
@@ -35,8 +39,6 @@ public class UserServiceImpl {
         log.info("start updateOrSave");
         Map<Long, User> userMap = userRepository.findAllById(ids).stream()
                 .collect(Collectors.toMap(User::getId, (u) -> u));
-
-        //return userMapMono.flatMapMany(userMap -> {
         log.info(userMap.toString());
         var newUsers = new ArrayList<User>();
         for (var id : ids) {
@@ -44,7 +46,6 @@ public class UserServiceImpl {
                 newUsers.add(new User(id, true));
             }
         }
-
         if (userMap.values().stream().noneMatch(User::isPlaying)) {
             userMap.values().forEach(user -> user.setPlaying(true));
         } else {
@@ -52,10 +53,8 @@ public class UserServiceImpl {
         }
         log.info("end updateOrSave");
 
-                userRepository.insert(newUsers);             // Insert new users
-              return userRepository.saveAll(userMap.values());     // Save existing users
-
-        // });
+        userRepository.insert(newUsers);
+        return userRepository.saveAll(userMap.values());
     }
 
 

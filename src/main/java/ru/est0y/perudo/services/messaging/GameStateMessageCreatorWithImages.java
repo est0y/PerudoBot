@@ -10,19 +10,17 @@ import ru.est0y.perudo.domain.Player;
 
 import java.util.List;
 import java.util.Map;
+
 @RequiredArgsConstructor
-public class GameStateMessageCreatorWithImages  {
+public class GameStateMessageCreatorWithImages {
     private final GameStateMessageCreator gameStateMessageCreator;
 
 
-    public List<RestAction<Message>> createMessage(JDA jda,Map<Player,MessageCreateData> map) {
-        //var map =gameStateMessageCreator.createMessage(game);
-       return  map.keySet().stream()
-               .map(player -> jda.retrieveUserById(player.getId())
-                       .flatMap(user -> user.openPrivateChannel()
-                               .flatMap(c->c.sendMessage(map.get(player))))).toList();
-
-      //return   map.keySet().stream().map(player -> jda.retrieveUserById(player.getId()).flatMap(user -> user.openPrivateChannel().flatMap(c->c.sendMessage(map.get(player))))).toList();
+    public List<RestAction<Message>> createMessage(JDA jda, Map<Player, MessageCreateData> map) {
+        return map.keySet().stream()
+                .map(player -> jda.retrieveUserById(player.getId())
+                        .flatMap(user -> user.openPrivateChannel()
+                                .flatMap(c -> c.sendMessage(map.get(player))))).toList();
     }
 
 

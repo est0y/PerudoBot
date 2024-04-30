@@ -6,6 +6,6 @@ import ru.est0y.perudo.domain.Player;
 
 import java.util.Map;
 
-public interface MessageCreator{
-    Map<Player,MessageCreateData> createMessage(Game game);
+public interface MessageCreator {
+    Map<Player, MessageCreateData> createMessage(Game game);
 }

@@ -16,53 +16,48 @@ import ru.est0y.perudo.Bot;
 import ru.est0y.perudo.services.messaging.EmojiDiceService;
 
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 @Configuration
 @Slf4j
 @RequiredArgsConstructor
 public class JdaConfig {
+
     private final EmojiDiceService emojiDiceService;
+
     @Bean
     public JDA jda(@Value("${app.bot.token}") String token, Bot bot) {
         var jda = JDABuilder.createDefault(token)
                 .addEventListeners(bot)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
-       //.enableIntents(GatewayIntent.GUILD_MESSAGES)
-
                 .build();
-        //jda.getGuilds().forEach(guild -> guild.updateCommands().addCommands())
+
         jda.upsertCommand("sg", "start game").setDescriptionLocalization(DiscordLocale.RUSSIAN, "начать игру")
                 .setGuildOnly(true)
-                //.addSubcommands(startGameSubCommands())
                 .queue();
 
-        var diceValueOption=new OptionData(OptionType.INTEGER,"value","dice value")
+        var diceValueOption = new OptionData(OptionType.INTEGER, "value", "dice value")
                 .setRequired(true)
                 .setMinValue(1)
                 .setMaxValue(6);
         jda.upsertCommand("move", "make move").setDescriptionLocalization(DiscordLocale.RUSSIAN, "сделать ход")
-                .addOption(OptionType.INTEGER,"count","dice count",true)
+                .addOption(OptionType.INTEGER, "count", "dice count", true)
                 .addOptions(diceValueOption)
-                //.addOption(OptionType.INTEGER,"value","dice value",true)
                 .queue();
 
         jda.upsertCommand("endgame", "end game").setDescriptionLocalization(DiscordLocale.RUSSIAN, "закончить игру")
-
-                //.addOption(OptionType.INTEGER,"value","dice value",true)
                 .queue();
         return jda;
     }
 
     public List<SubcommandData> startGameSubCommands() {
-        new OptionData(OptionType.INTEGER,"dicevalue","dice value")
+        new OptionData(OptionType.INTEGER, "dicevalue", "dice value")
                 .setRequired(true)
-                .addChoice(emojiDiceService.getAsString(1),1)
-                .addChoice(emojiDiceService.getAsString(2),2)
-                .addChoice(emojiDiceService.getAsString(3),3)
-                .addChoice(emojiDiceService.getAsString(4),4)
-                .addChoice(emojiDiceService.getAsString(5),5)
-                .addChoice(emojiDiceService.getAsString(6),6);
+                .addChoice(emojiDiceService.getAsString(1), 1)
+                .addChoice(emojiDiceService.getAsString(2), 2)
+                .addChoice(emojiDiceService.getAsString(3), 3)
+                .addChoice(emojiDiceService.getAsString(4), 4)
+                .addChoice(emojiDiceService.getAsString(5), 5)
+                .addChoice(emojiDiceService.getAsString(6), 6);
         return List.of(
                 new SubcommandData("classic", "start a classic game"),
                 new SubcommandData("ranked", "start a ranked game")
