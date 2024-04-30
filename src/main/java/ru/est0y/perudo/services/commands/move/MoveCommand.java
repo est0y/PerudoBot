@@ -41,15 +41,9 @@ public class MoveCommand {
     private final MessagingUtils messagingUtils;
 
     public void execute(CustomEvent event, int diceCount, int diceValue) {
-        if (diceCount <= 0) {
-            event.reply("Число костей должно быть больше 0");
+        if (isIncorrectDice(event, diceCount, diceValue)) {
             return;
         }
-        if (!(diceValue >= 1 && diceValue <= 6)) {
-            event.reply("Вторая цифра должна быть 1 до 6");
-            return;
-        }
-        var newBet = new Bet(diceCount, diceValue);
         var game = gameService.findByTurnHolder(event.getUser().getIdLong()).orElseThrow(() -> {
             event.reply("Не ваш ход");
             return new RuntimeException();
@@ -58,30 +52,60 @@ public class MoveCommand {
             event.reply("Сначало нажми верю/не верю");
             return;
         }
-        if (game.isSpecialRound()) {
-            specialRoundBetFilter.doFilter(event, game.getLastBet(), newBet);
-        } else {
-            betFilter.doFilter(event, game.getLastBet(), newBet);
-        }
-
+        var newBet = new Bet(diceCount, diceValue);
+        betFilter(event, game, newBet);
         var bettingPlayer = game.getTurnHolder();
         var nextPlayer = playerUtils.getNextPlayer(game);
         game.setLastBet(new Bet(diceCount, diceValue));
         log.info("{} betting {}", bettingPlayer.getName(), game.getLastBet());
         var betMessage = betMessageCreator.createMessage(game.getTurnHolder(), game.getLastBet());
-        Map<Player, MessageCreateData> messagesForPlayer = messagingUtils.getMessageMap(game.getPlayers(), betMessage);
-        messagesForPlayer.remove(bettingPlayer);
-        messageSender.send(event.getJDA(), messagesForPlayer);
-        List<ItemComponent> buttons = List.of(Button.success("believe", "Верю"),
-                Button.danger("noBelieve", "Не верю"));
-        messageSender.send(event.getJDA(), nextPlayer, betMessage, buttons);
-        nextTurn(game);
-        game.setBelieversCount(0);
-        gameService.save(game);
+        sendToAllExceptBettingPlayer(event, game, bettingPlayer, betMessage);
+        sendToNextPlayer(event,nextPlayer,betMessage);
+        gameChangeAfterMove(game);
         event.reply(betMessage);
     }
 
     private void nextTurn(Game game) {
         game.setTurnHolder(playerUtils.getNextPlayer(game));
+    }
+
+    private boolean isIncorrectDice(CustomEvent event, int diceCount, int diceValue) {
+        if (diceCount <= 0) {
+            event.reply("Число костей должно быть больше 0");
+            return true;
+        }
+        if (!(diceValue >= 1 && diceValue <= 6)) {
+            event.reply("Вторая цифра должна быть 1 до 6");
+            return true;
+        }
+        return false;
+    }
+
+    private void gameChangeAfterMove(Game game) {
+        nextTurn(game);
+        game.setBelieversCount(0);
+        gameService.save(game);
+    }
+
+    private void sendToAllExceptBettingPlayer(CustomEvent event, Game game,
+                                              Player bettingPlayer,
+                                              MessageCreateData betMessage) {
+        Map<Player, MessageCreateData> messagesForPlayer = messagingUtils.getMessageMap(game.getPlayers(), betMessage);
+        messagesForPlayer.remove(bettingPlayer);
+        messageSender.send(event.getJDA(), messagesForPlayer);
+    }
+
+    private void sendToNextPlayer(CustomEvent event,Player nextPlayer,MessageCreateData betMessage) {
+        List<ItemComponent> buttons = List.of(Button.success("believe", "Верю"),
+                Button.danger("noBelieve", "Не верю"));
+        messageSender.send(event.getJDA(), nextPlayer, betMessage, buttons);
+    }
+
+    private void betFilter(CustomEvent event, Game game, Bet newBet) {
+        if (game.isSpecialRound()) {
+            specialRoundBetFilter.doFilter(event, game.getLastBet(), newBet);
+        } else {
+            betFilter.doFilter(event, game.getLastBet(), newBet);
+        }
     }
 }
