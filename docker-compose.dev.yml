@@ -7,4 +7,4 @@ services:
       dockerfile: Dockerfile
     image: perudobot
     networks:
-      - perudobot_network  # Подключение к сети
+      - perudobot_network
