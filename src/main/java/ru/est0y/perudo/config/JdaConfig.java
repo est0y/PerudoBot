@@ -35,15 +35,6 @@ public class JdaConfig {
                 .setGuildOnly(true)
                 .queue();
 
-        var diceValueOption = new OptionData(OptionType.INTEGER, "value", "dice value")
-                .setRequired(true)
-                .setMinValue(1)
-                .setMaxValue(6);
-        jda.upsertCommand("move", "make move").setDescriptionLocalization(DiscordLocale.RUSSIAN, "сделать ход")
-                .addOption(OptionType.INTEGER, "count", "dice count", true)
-                .addOptions(diceValueOption)
-                .queue();
-
         jda.upsertCommand("endgame", "end game").setDescriptionLocalization(DiscordLocale.RUSSIAN, "закончить игру")
                 .queue();
         return jda;
