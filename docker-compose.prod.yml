@@ -1,0 +1,7 @@
+version: '4.0'
+#  docker-compose -f docker-compose.base.yml -f docker-compose.prod.yml
+services:
+  java-app:
+    image: perudobot:1.0.0
+    networks:
+      - perudobot_network

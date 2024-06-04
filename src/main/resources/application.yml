@@ -2,8 +2,8 @@ app:
   messages:
     color: BLACK
   bot:
-    token: "MTE0NDc2OTU1MzUwMzYxNzEzNA.G-1fqE.A3Tt6xLxGlPsFWVyNHY7rfosBkpMRCz806dqWg"
+    token: ${SECRET_CODE}
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:30001/mongod
+      uri: ${MONGO_URL}
