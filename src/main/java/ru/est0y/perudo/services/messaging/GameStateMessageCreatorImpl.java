@@ -50,8 +50,10 @@ public class GameStateMessageCreatorImpl implements GameStateMessageCreator {
         } else {
             loserName = playerUtils.getPreviousPlayer(game).getName();
         }
-        embed.addField("", "нужно " + lastBet.getDiceCount() + "" + emojiDiceService.getAsString(lastBet.getDiceValue()) + " ", false);
-        embed.addField("", "за столом " + diceCountInGame + "" + emojiDiceService.getAsString(lastBet.getDiceValue()), false);
+        embed.addField("", "нужно " + lastBet.getDiceCount() + "" +
+                emojiDiceService.getAsString(lastBet.getDiceValue()) + " ", false);
+        embed.addField("", "за столом " + diceCountInGame + "" +
+                emojiDiceService.getAsString(lastBet.getDiceValue()), false);
         embed.addField("", loserName + " теряет кость", false);
         var message = new MessageCreateBuilder().setEmbeds(embed.build()).build();
         return game.getPlayers().stream().collect(Collectors.toMap(player -> player, player -> message));
@@ -93,4 +95,5 @@ public class GameStateMessageCreatorImpl implements GameStateMessageCreator {
 
         return result;
     }
+ 
 }

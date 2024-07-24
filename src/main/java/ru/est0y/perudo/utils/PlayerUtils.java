@@ -17,7 +17,8 @@ public class PlayerUtils {
     public Player getNextPlayer(Game game) {
         log.info("turn holder name = {}", game.getTurnHolder().getName());
         var playerNumber = game.getTurnHolder().getNumber();
-        var players = game.getPlayers().stream().filter(Player::isPlaying).sorted(Comparator.comparing(Player::getNumber)).toList();
+        var players = game.getPlayers().stream().filter(Player::isPlaying)
+                .sorted(Comparator.comparing(Player::getNumber)).toList();
         var endNumber = players.stream().max(Comparator.comparing(Player::getNumber)).orElseThrow().getNumber();
         if ((playerNumber == endNumber)) {
             return players.get(0);
@@ -29,10 +30,13 @@ public class PlayerUtils {
 
     public Player getPreviousPlayer(Game game) {
         var playerNumber = game.getTurnHolder().getNumber();
-        var players = game.getPlayers().stream().filter(Player::isPlaying).sorted(Comparator.comparing(Player::getNumber)).toList();
+        var players = game.getPlayers().stream().filter(Player::isPlaying)
+                .sorted(Comparator.comparing(Player::getNumber)).toList();
         int turnHolderIndex = players.indexOf(game.getTurnHolder());
         var firstNumber = players.stream().min(Comparator.comparing(Player::getNumber)).orElseThrow().getNumber();
-        if (firstNumber == playerNumber) return players.get(players.size() - 1);
+        if (firstNumber == playerNumber) {
+            return players.get(players.size() - 1);
+        }
         log.info("previous player name = {}", players.get(turnHolderIndex - 1).getName());
         return players.get(turnHolderIndex - 1);
     }

@@ -29,6 +29,7 @@ public class MessageSenderImpl implements MessageSender {
         log.info("personal message {}", player.getName());
     }
 
+    @Retryable
     @Override
     public void send(JDA jda, Player player, MessageCreateData message, List<ItemComponent> buttons) {
         sendMessageWithRetry(jda, player, message, buttons);
@@ -39,7 +40,6 @@ public class MessageSenderImpl implements MessageSender {
     public static void sendMessageWithRetry(JDA jda, Player player,
                                             MessageCreateData message,
                                             List<ItemComponent> buttons) {
-        try {
             jda.retrieveUserById(player.getId()).queue(user -> {
                 user.openPrivateChannel().queue(channel -> {
                     if (buttons.isEmpty()) {
@@ -49,11 +49,6 @@ public class MessageSenderImpl implements MessageSender {
                     }
                 });
             });
-        } catch (Exception e) {
-            log.info("send message with button error");
-            log.error("send message error", e);
-            throw e;
-        }
     }
 }
 
