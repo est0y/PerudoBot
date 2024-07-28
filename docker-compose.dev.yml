@@ -5,6 +5,5 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: perudobot
     networks:
       - perudobot_network
