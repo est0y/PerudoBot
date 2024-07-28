@@ -38,9 +38,8 @@ public class StartGameCommand implements SlashCommand {
     @Transactional
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-
         var members = utils.getVoiceChannel(event).getMembers().stream().filter(m -> !m.getUser().isBot()).toList();
-        membersFilter.doFilter(members);
+        membersFilter.doFilter(members,event);
         try {
             userService.updateOrSave(members.stream().map(ISnowflake::getIdLong).toList());
         } catch (Exception e) {
