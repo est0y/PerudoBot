@@ -1,0 +1,30 @@
+version: '4.0'
+
+services:
+  java-app:
+    container_name: PerudoBot
+    ports:
+      - "${JAVA_APP_PORT}:8080"
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URL: mongodb://mongodb:27017/mydatabase
+      SERVER_PORT: 8080
+      SECRET_CODE: ${SECRET_CODE}
+    networks:
+      - perudobot_network
+
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - perudobot_network
+
+networks:
+  perudobot_network:
+    driver: bridge
+
+volumes:
+  mongo-data:

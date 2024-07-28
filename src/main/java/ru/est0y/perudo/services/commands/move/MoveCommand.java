@@ -1,0 +1,111 @@
+package ru.est0y.perudo.services.commands.move;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import org.springframework.stereotype.Service;
+import ru.est0y.perudo.domain.Bet;
+import ru.est0y.perudo.domain.Game;
+import ru.est0y.perudo.domain.Player;
+import ru.est0y.perudo.domain.rounds.RegularRound;
+import ru.est0y.perudo.domain.rounds.SpecialRound;
+import ru.est0y.perudo.services.GameService;
+import ru.est0y.perudo.services.commands.filters.BetFilter;
+import ru.est0y.perudo.services.messaging.BetMessageCreator;
+import ru.est0y.perudo.services.messaging.MessageSender;
+import ru.est0y.perudo.utils.CustomEvent;
+import ru.est0y.perudo.utils.MessagingUtils;
+import ru.est0y.perudo.utils.PlayerUtils;
+
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class MoveCommand {
+    private final GameService gameService;
+
+    private final BetFilter<RegularRound> betFilter;
+
+    private final BetFilter<SpecialRound> specialRoundBetFilter;
+
+    private final BetMessageCreator betMessageCreator;
+
+    private final MessageSender messageSender;
+
+    private final PlayerUtils playerUtils;
+
+    private final MessagingUtils messagingUtils;
+
+    public void execute(CustomEvent event, int diceCount, int diceValue) {
+        if (isIncorrectDice(event, diceCount, diceValue)) {
+            return;
+        }
+        var game = gameService.findByTurnHolder(event.getUser().getIdLong()).orElseThrow(() -> {
+            event.reply("Не ваш ход");
+            return new RuntimeException();
+        });
+        if (game.getBelieversCount() == 0) {
+            event.reply("Сначало нажми верю/не верю");
+            return;
+        }
+        var newBet = new Bet(diceCount, diceValue);
+        betFilter(event, game, newBet);
+        var bettingPlayer = game.getTurnHolder();
+        var nextPlayer = playerUtils.getNextPlayer(game);
+        game.setLastBet(new Bet(diceCount, diceValue));
+        log.info("{} betting {}", bettingPlayer.getName(), game.getLastBet());
+        var betMessage = betMessageCreator.createMessage(game.getTurnHolder(), game.getLastBet());
+        sendToAllExceptBettingPlayer(event, game, bettingPlayer, betMessage);
+        sendToNextPlayer(event,nextPlayer,betMessage);
+        gameChangeAfterMove(game);
+        event.reply(betMessage);
+    }
+
+    private void nextTurn(Game game) {
+        game.setTurnHolder(playerUtils.getNextPlayer(game));
+    }
+
+    private boolean isIncorrectDice(CustomEvent event, int diceCount, int diceValue) {
+        if (diceCount <= 0) {
+            event.reply("Число костей должно быть больше 0");
+            return true;
+        }
+        if (!(diceValue >= 1 && diceValue <= 6)) {
+            event.reply("Вторая цифра должна быть 1 до 6");
+            return true;
+        }
+        return false;
+    }
+
+    private void gameChangeAfterMove(Game game) {
+        nextTurn(game);
+        game.setBelieversCount(0);
+        gameService.save(game);
+    }
+
+    private void sendToAllExceptBettingPlayer(CustomEvent event, Game game,
+                                              Player bettingPlayer,
+                                              MessageCreateData betMessage) {
+        Map<Player, MessageCreateData> messagesForPlayer = messagingUtils.getMessageMap(game.getPlayers(), betMessage);
+        messagesForPlayer.remove(bettingPlayer);
+        messageSender.send(event.getJDA(), messagesForPlayer);
+    }
+
+    private void sendToNextPlayer(CustomEvent event,Player nextPlayer,MessageCreateData betMessage) {
+        List<ItemComponent> buttons = List.of(Button.success("believe", "Верю"),
+                Button.danger("noBelieve", "Не верю"));
+        messageSender.send(event.getJDA(), nextPlayer, betMessage, buttons);
+    }
+
+    private void betFilter(CustomEvent event, Game game, Bet newBet) {
+        if (game.isSpecialRound()) {
+            specialRoundBetFilter.doFilter(event, game.getLastBet(), newBet);
+        } else {
+            betFilter.doFilter(event, game.getLastBet(), newBet);
+        }
+    }
+}

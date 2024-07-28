@@ -1,0 +1,9 @@
+app:
+  messages:
+    color: BLACK
+  bot:
+    token: ${SECRET_CODE}
+spring:
+  data:
+    mongodb:
+      uri: ${MONGO_URL}
