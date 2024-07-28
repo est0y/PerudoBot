@@ -37,6 +37,8 @@ public class JdaConfig {
 
         jda.upsertCommand("endgame", "end game").setDescriptionLocalization(DiscordLocale.RUSSIAN, "закончить игру")
                 .queue();
+        jda.upsertCommand("help", "").setDescriptionLocalization(DiscordLocale.RUSSIAN, "Помощь")
+                .queue();
         return jda;
     }
 
